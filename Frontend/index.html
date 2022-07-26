@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="Frontend - Dev" content="EnverLee">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EnverLee-Market</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+
+    <script type="text/javascript" src="https://unpkg.com/web3@1.2.11/dist/web3.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/web3modal@1.9.0/dist/index.js"></script>
+    <script type="text/javascript"
+            src="https://unpkg.com/@walletconnect/web3-provider@1.2.1/dist/umd/index.min.js"></script>
+    <script src="assets/config.js"></script>
+    <script src="assets/walletLib.js"></script>
+    <script src="assets/main.js"></script>
+</head>
+<script>
+    function onBodyLoad() {
+        getAccount();
+    }
+
+    async function getAccount() {
+        const provider = window.ethereum;
+        if (!provider) {
+            console.log("Metamask is not installed, please install!");
+        }
+        const chainId = await provider.request({method: 'eth_chainId'});
+        const binanceTestChainId = '0x61'
+        try {
+            await provider.request({
+                method: 'wallet_addEthereumChain',
+                params: [
+                    {
+                        chainId: '0xa869',
+                        chainName: 'Avalanche Fuji Testnet',
+                        rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'],
+                        // blockExplorerUrls:['https://testnet.bscscan.com'],
+                        nativeCurrency: {
+                            symbol: 'AVAX',
+                            decimals: 18
+                        }
+                    }]
+            });
+        } catch (addError) {
+            console.log(addError);
+        }
+
+        const showAccount = document.querySelector('.showAccount');
+        const accounts = await ethereum.request({method: 'eth_requestAccounts'});
+        const account = accounts[0];
+        showAccount.innerHTML = account;
+    }
+
+    async function lending() {
+        const nftAddress= document.querySelector('#nftAddress_lend').value;
+        const tokenId= document.querySelector('#nftAddress_lend').value;
+        const lendingId= document.querySelector('#nftAddress_lend').value;
+        const lendingAmount = await EnverLeeMarket.getLending(nftAddress, tokenId, lendingId);
+
+        console.log("lending Amount", lendingAmount);
+    }
+
+    async function rentFee() {
+        const Address= document.querySelector('#rentAddress').value;
+        const rentFee = await EnverLeeMarket.getRentFee(Address);
+        console.log("Rent Fee Amount", rentFee);
+    }
+
+    async function renting() {
+        const nftAddress= document.querySelector('#nftAddress_rent').value;
+        const tokenId= document.querySelector('#tokenId_rent').value;
+        const lendingId= document.querySelector('#rentingId_rent').value;
+
+        const rentingAmount = await EnverLeeMarket.getRenting(nftAddress, tokenId, lendingId);
+        console.log("renting Amount", rentingAmount);
+
+    }
+</script>
+<body onload="onBodyLoad();">
+<main>
+    <div class="container-fluid">
+        <div class="form-group shadow p-3 mb-5 bg-white rounded">
+            <h4 class="showAccount text-danger"></h4>
+        </div>
+        <div class="container">
+            <div class="form-group shadow p-3 mb-5 bg-white rounded">
+                <h2>Display Lending Amount</h2>
+                <div class="input-group mb-3">
+                    <input id="nftAddress_lend" type="text" class="form-control" placeholder="Input Address">
+                    <input id="tokenId_lend" type="text" class="form-control" placeholder="Input TokenId">
+                    <input id="rentingId_lend" type="text" class="form-control" placeholder="Input Renting Id">
+                </div>
+                <div>
+                    <button class="btn btn-primary" id="lending" onclick="lending();">Get Result</button>
+                    <div class="result">
+                        <ul class="text-success" id="lending_result"></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group shadow p-3 mb-5 bg-white rounded">
+                <h2>Display Rent Fee</h2>
+                <div class="input-group mb-3">
+                    <input id="rentAddress" type="text" class="form-control" placeholder="Input Address">
+                </div>
+                <div>
+                    <button class="btn btn-primary" id="rentFee" onclick="rentFee();">Get Result</button>
+                    <div class="result">
+                        <h4 class="text-success" id="rentfee_result"></h4>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group shadow p-3 mb-5 bg-white rounded">
+                <h2>Display Renting Amount</h2>
+                <div class="input-group mb-3">
+                    <input id="nftAddress_rent" type="text" class="form-control" placeholder="Input Address">
+                    <input id="tokenId_rent" type="text" class="form-control" placeholder="Input TokenId">
+                    <input id="rentingId_rent" type="text" class="form-control" placeholder="Input Renting Id">
+                </div>
+                <div>
+                    <button class="btn btn-primary" id="renting" onclick="renting();">Get Result</button>
+                    <div class="result">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>
